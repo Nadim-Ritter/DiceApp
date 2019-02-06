@@ -1,5 +1,7 @@
 package com.example.diceapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -12,11 +14,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+
+    SharedPreferences resultHistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +53,11 @@ public class MainActivity extends AppCompatActivity {
 
         boolean secondInLine = false;
 
-        for (int i = 0; i < diceList.size(); i++) {
+        //store results in shared pref
+        resultHistory = getSharedPreferences("resultHistory", Context.MODE_PRIVATE);
 
+
+        for (int i = 0; i < diceList.size(); i++) {
             FrameLayout.LayoutParams layoutButton = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 
             //Button Type
@@ -91,11 +103,32 @@ public class MainActivity extends AppCompatActivity {
                     TextView resultOutput = (TextView) findViewById(R.id.resultOutput);
 
                     resultOutput.setText(Integer.toString(randomNumber));
+
+                    //store value
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    String diceTypeWithTimestamp = diceList.get(index).getName() + ":" + timestamp;
+
+                    resultHistory.edit().putInt(diceTypeWithTimestamp, randomNumber).apply();
                 }
             });
+        }
+    }
 
+    public void getAllPrefs(View view) throws ParseException {
+        Map<String, ?> allEntries = resultHistory.getAll();
+        List<Timestamp> timestampList = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            String timestampTemp[] = entry.getKey().split(":");
+            Date parsedDate = dateFormat.parse(timestampTemp[0]);
+
+            Timestamp timestamp = new Timestamp(parsedDate.getTime());
+            timestampList.add(timestamp);
         }
 
-
+        for(int i = 0; i < timestampList.size(); i++){
+            System.out.println(timestampList.get(i));
+        }
     }
 }
