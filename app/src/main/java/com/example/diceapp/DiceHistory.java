@@ -9,7 +9,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiceHistoy extends AppCompatActivity {
+public class DiceHistory extends AppCompatActivity {
 
     List<Dice> diceWithResult;
 
@@ -34,11 +34,5 @@ public class DiceHistoy extends AppCompatActivity {
         ArrayAdapter adapter = new ArrayAdapter<String>(this,R.layout.text_view_for_list, resultsInString);
 
         listView.setAdapter(adapter);
-
-
-
-
-
-
     }
 }
