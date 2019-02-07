@@ -1,8 +1,10 @@
 package com.example.diceapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
         //store results in shared pref
         resultHistory = getSharedPreferences("resultHistory", Context.MODE_PRIVATE);
-
 
         for (int i = 0; i < diceList.size(); i++) {
             FrameLayout.LayoutParams layoutButton = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //store value
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                    String diceTypeWithTimestamp = diceList.get(index).getName() + ":" + timestamp;
+                    String diceTypeWithTimestamp = diceList.get(index).getName() + ";" + timestamp;
 
                     resultHistory.edit().putInt(diceTypeWithTimestamp, randomNumber).apply();
                 }
@@ -115,20 +117,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getAllPrefs(View view) throws ParseException {
+
         Map<String, ?> allEntries = resultHistory.getAll();
         List<Timestamp> timestampList = new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
 
+        List<Dice> diceWithResult = new ArrayList<>();
+
+
+        //iterate throw list
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            String timestampTemp[] = entry.getKey().split(":");
-            Date parsedDate = dateFormat.parse(timestampTemp[0]);
+            String timestampTemp[] = entry.getKey().split(";");
+
+            Date parsedDate = dateFormat.parse(timestampTemp[1]);
 
             Timestamp timestamp = new Timestamp(parsedDate.getTime());
             timestampList.add(timestamp);
+
+            String value = entry.getValue().toString();
+
+            //fill result in object, add to list
+            Dice diceResult = new Dice(timestampTemp[0], Integer.parseInt(value), timestamp);
+            diceWithResult.add(diceResult);
         }
 
-        for(int i = 0; i < timestampList.size(); i++){
-            System.out.println(timestampList.get(i));
-        }
+        //sort list with diceType, result, timestamp
+        Collections.sort(diceWithResult, Collections.<Dice>reverseOrder());
+
+        //change to dice history
+        Intent intent = new Intent(this, DiceHistoy.class);
+        intent.putExtra("diceWithResult", new DiceParameter(diceWithResult));
+        startActivity(intent);
     }
 }
