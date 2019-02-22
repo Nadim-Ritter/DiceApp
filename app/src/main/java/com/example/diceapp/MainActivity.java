@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         List<Dice> diceWithResult = new ArrayList<>();
 
 
-        //iterate throw list
+        //iterate list
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             String timestampTemp[] = entry.getKey().split(";");
 
@@ -241,4 +241,51 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 }
+FrameLayout.LayoutParams layoutButton = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+
+            //Button Type
+            Button button = new Button(getActivity());
+
+            button.setId(i);
+
+            //Layout
+            if(secondInLine){
+                set.connect(button.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 100);
+                set.connect(button.getId(),ConstraintSet.RIGHT,ConstraintSet.PARENT_ID,ConstraintSet.RIGHT,100);
+                set.connect(button.getId(),ConstraintSet.LEFT,ConstraintSet.PARENT_ID,ConstraintSet.LEFT,600);
+                set.connect(button.getId(),ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,100 + (200*(i-1)));
+
+                //layoutButton.setMargins(600, 100 + (200*(i-1)), 100, 100);
+                secondInLine = false;
+            }else{
+                set.connect(button.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 100);
+                set.connect(button.getId(),ConstraintSet.RIGHT,ConstraintSet.PARENT_ID,ConstraintSet.RIGHT,100);
+                set.connect(button.getId(),ConstraintSet.LEFT,ConstraintSet.PARENT_ID,ConstraintSet.LEFT,200);
+                set.connect(button.getId(),ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,100 + (200*i));
+
+                //layoutButton.setMargins(200, 100 + (200*i), 100, 100);
+                secondInLine = true;
+            }
+
+            //Image or Text
+            //button.setImageResource(getResources().getIdentifier(diceList.get(i).getName(), "drawable", getPackageName()));
+            button.setText(Integer.toString(diceList.get(i).getDiceType()));
+            button.setTypeface(Typeface.DEFAULT_BOLD);
+            button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
+
+            set.constrainHeight(button.getId(), 300);
+            set.constrainWidth(button.getId(), 300);
+
+            set.applyTo(layout);
+
+            layoutButton.width = 300;
+            layoutButton.height = 300;
+
+            //button.setLayoutParams(layoutButton);
+
+
+
+            //add button to the layout
+            layout.addView(button);
+
 */

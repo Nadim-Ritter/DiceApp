@@ -9,10 +9,9 @@
 
     <Button
         android:id="@+id/dice4"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="44dp"
-        android:layout_marginBottom="30dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@android:color/holo_blue_light"
         android:text="4"
         app:layout_constraintBottom_toTopOf="@+id/dice8"
         app:layout_constraintEnd_toStartOf="@+id/dice6"
@@ -22,10 +21,9 @@
 
     <Button
         android:id="@+id/dice6"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="44dp"
-        android:layout_marginBottom="30dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@android:color/holo_blue_light"
         android:text="6"
         app:layout_constraintBottom_toTopOf="@+id/dice10"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,10 +33,9 @@
 
     <Button
         android:id="@+id/dice8"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginBottom="69dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@android:color/holo_blue_light"
         android:text="8"
         app:layout_constraintBottom_toTopOf="@+id/dice12"
         app:layout_constraintEnd_toStartOf="@+id/dice10"
@@ -48,10 +45,9 @@
 
     <Button
         android:id="@+id/dice10"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginBottom="69dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@android:color/holo_blue_light"
         android:text="10"
         app:layout_constraintBottom_toTopOf="@+id/dice20"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,10 +57,11 @@
 
     <Button
         android:id="@+id/dice12"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="68dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@android:color/holo_blue_light"
         android:text="12"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/dice20"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,12 +69,14 @@
 
     <Button
         android:id="@+id/dice20"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="68dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@android:color/holo_blue_light"
         android:text="20"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/dice12"
         app:layout_constraintTop_toBottomOf="@+id/dice10" />
+
 </android.support.constraint.ConstraintLayout>

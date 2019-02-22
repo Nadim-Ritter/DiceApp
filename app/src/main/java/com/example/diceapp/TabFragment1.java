@@ -1,26 +1,24 @@
 package com.example.diceapp;
+
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class TabFragment1 extends Fragment{
+public class TabFragment1 extends Fragment {
 
     SharedPreferences resultHistory;
     static String packageName;
@@ -56,57 +54,12 @@ public class TabFragment1 extends Fragment{
         boolean secondInLine = false;
 
         //store results in shared pref
-        //resultHistory = getSharedPreferences("resultHistory", Context.MODE_PRIVATE);
+        resultHistory = this.getActivity().getSharedPreferences("resultHistory", Context.MODE_PRIVATE);
+
+        //players = ((GlobalVariables) this.getApplication()).getPlayers();
+        //((GlobalVariables) this.getApplication()).setCurrQuestionType("trueFalseQuestion");
 
         for (int i = 0; i < diceList.size(); i++) {
-            /*FrameLayout.LayoutParams layoutButton = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-
-            //Button Type
-            Button button = new Button(getActivity());
-
-            button.setId(i);
-
-            //Layout
-            if(secondInLine){
-                set.connect(button.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 100);
-                set.connect(button.getId(),ConstraintSet.RIGHT,ConstraintSet.PARENT_ID,ConstraintSet.RIGHT,100);
-                set.connect(button.getId(),ConstraintSet.LEFT,ConstraintSet.PARENT_ID,ConstraintSet.LEFT,600);
-                set.connect(button.getId(),ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,100 + (200*(i-1)));
-
-                //layoutButton.setMargins(600, 100 + (200*(i-1)), 100, 100);
-                secondInLine = false;
-            }else{
-                set.connect(button.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 100);
-                set.connect(button.getId(),ConstraintSet.RIGHT,ConstraintSet.PARENT_ID,ConstraintSet.RIGHT,100);
-                set.connect(button.getId(),ConstraintSet.LEFT,ConstraintSet.PARENT_ID,ConstraintSet.LEFT,200);
-                set.connect(button.getId(),ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP,100 + (200*i));
-
-                //layoutButton.setMargins(200, 100 + (200*i), 100, 100);
-                secondInLine = true;
-            }
-
-            //Image or Text
-            //button.setImageResource(getResources().getIdentifier(diceList.get(i).getName(), "drawable", getPackageName()));
-            button.setText(Integer.toString(diceList.get(i).getDiceType()));
-            button.setTypeface(Typeface.DEFAULT_BOLD);
-            button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
-
-            set.constrainHeight(button.getId(), 300);
-            set.constrainWidth(button.getId(), 300);
-
-            set.applyTo(layout);
-
-            layoutButton.width = 300;
-            layoutButton.height = 300;
-
-            //button.setLayoutParams(layoutButton);
-
-
-
-            //add button to the layout
-            layout.addView(button);
-            */
-
 
             final int index = i;
 
@@ -123,22 +76,35 @@ public class TabFragment1 extends Fragment{
                     int min = 1;
 
                     int randomNumber = rd.nextInt((max - min) + 1) + min;
-                    System.out.println(randomNumber);
 
-                    /*TextView resultOutput = (TextView) getView().findViewById(R.id.resultOutput);
-
-                    resultOutput.setText(Integer.toString(randomNumber));*/
+                    //show result in alert dialog
+                    alertDialog(diceList.get(index).getName(), randomNumber);
 
                     //store value
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     String diceTypeWithTimestamp = diceList.get(index).getName() + ";" + timestamp;
 
-                    //resultHistory.edit().putInt(diceTypeWithTimestamp, randomNumber).apply();
+                    resultHistory.edit().putInt(diceTypeWithTimestamp, randomNumber).apply();
                 }
             });
+
+            //store result in global variable
+            ((GlobalVariables) this.getActivity().getApplication()).setResultHistory(resultHistory);
 
         }
 
         return view;
+    }
+
+    private void alertDialog(String diceName, Integer result) {
+        AlertDialog.Builder resultAlert = new AlertDialog.Builder(new ContextThemeWrapper(getView().getContext(), R.style.ResultAlertStyle));
+
+        resultAlert.setMessage(result.toString());
+        resultAlert.setTitle(diceName);
+
+        AlertDialog alertDialog = resultAlert.create();
+
+        alertDialog.show();
+        alertDialog.getWindow().setLayout(400, 300);
     }
 }
