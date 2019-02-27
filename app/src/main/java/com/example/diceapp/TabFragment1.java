@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.Random;
 public class TabFragment1 extends Fragment {
 
     SharedPreferences resultHistory;
+    int currentNumber = 0;
     static String packageName;
 
     @Override
@@ -28,8 +30,6 @@ public class TabFragment1 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_tab_fragment1, container, false);
 
         ConstraintLayout layout = (ConstraintLayout) view.findViewById(R.id.layout);
-        ConstraintSet set = new ConstraintSet();
-        set.clone(layout);
 
         //set package name
         packageName = "com.example.diceapp";
@@ -76,13 +76,22 @@ public class TabFragment1 extends Fragment {
                     int min = 1;
 
                     int randomNumber = rd.nextInt((max - min) + 1) + min;
+                    randomNumber = randomNumber + currentNumber;
 
                     //show result in alert dialog
                     alertDialog(diceList.get(index).getName(), randomNumber);
 
+                    String diceTypeWithTimestamp;
+
                     //store value
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                    String diceTypeWithTimestamp = diceList.get(index).getName() + ";" + timestamp;
+                    if(currentNumber > 0){
+                        diceTypeWithTimestamp = diceList.get(index).getName() + "+" + currentNumber + ";" + timestamp;
+                    }else if(currentNumber < 0){
+                        diceTypeWithTimestamp = diceList.get(index).getName() + currentNumber + ";" + timestamp;
+                    }else{
+                        diceTypeWithTimestamp = diceList.get(index).getName() + ";" + timestamp;
+                    }
 
                     resultHistory.edit().putInt(diceTypeWithTimestamp, randomNumber).apply();
                 }
@@ -93,14 +102,61 @@ public class TabFragment1 extends Fragment {
 
         }
 
+        Button removeButton = (Button) view.findViewById(R.id.removeButton);
+        Button addButton = (Button) view.findViewById(R.id.addButton);
+
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeNumber(false);
+            }
+        });
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeNumber(true);
+            }
+        });
+
         return view;
+    }
+
+    public void changeNumber(boolean operation){
+        TextView extraNumberField = (TextView) getView().findViewById(R.id.extraNumberField);
+
+        //get number without operation
+        currentNumber = Integer.parseInt(extraNumberField.getText().toString().substring(1));
+
+        //if operation is true: add number, else: remove number
+        if(operation){
+            currentNumber++;
+
+        }else{
+            currentNumber--;
+        }
+
+        if(currentNumber < 0){
+            extraNumberField.setText(currentNumber);
+        }else{
+            extraNumberField.setText("+" + currentNumber);
+        }
+
     }
 
     private void alertDialog(String diceName, Integer result) {
         AlertDialog.Builder resultAlert = new AlertDialog.Builder(new ContextThemeWrapper(getView().getContext(), R.style.ResultAlertStyle));
 
         resultAlert.setMessage(result.toString());
-        resultAlert.setTitle(diceName);
+
+        if(currentNumber > 0){
+            resultAlert.setTitle(diceName + "+" + currentNumber);
+        }else if(currentNumber < 0){
+            resultAlert.setTitle(diceName + currentNumber);
+        }else{
+            resultAlert.setTitle(diceName);
+        }
+
 
         AlertDialog alertDialog = resultAlert.create();
 

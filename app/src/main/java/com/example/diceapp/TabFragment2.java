@@ -85,6 +85,7 @@ public class TabFragment2 extends Fragment {
         return diceWithResult;
     }
 
+
     //reload list
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {

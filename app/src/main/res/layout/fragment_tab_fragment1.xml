@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout"
+    android:id="@+id/numbersField"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -59,6 +59,7 @@
         android:id="@+id/dice12"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_marginBottom="50dp"
         android:background="@android:color/holo_blue_light"
         android:text="12"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -71,6 +72,7 @@
         android:id="@+id/dice20"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_marginBottom="50dp"
         android:background="@android:color/holo_blue_light"
         android:text="20"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -78,5 +80,41 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/dice12"
         app:layout_constraintTop_toBottomOf="@+id/dice10" />
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="36dp"
+        android:background="#018AC2"
+        android:text="+"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/extraNumberField"
+        app:layout_constraintTop_toBottomOf="@+id/dice20" />
+
+    <Button
+        android:id="@+id/removeButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="36dp"
+        android:background="#018AC2"
+        android:text="-"
+        app:layout_constraintEnd_toStartOf="@+id/extraNumberField"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dice12" />
+
+    <TextView
+        android:id="@+id/extraNumberField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="+0"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/addButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/removeButton"
+        app:layout_constraintTop_toBottomOf="@+id/dice12" />
 
 </android.support.constraint.ConstraintLayout>
