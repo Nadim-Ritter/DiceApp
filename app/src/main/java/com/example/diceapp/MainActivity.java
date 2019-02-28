@@ -1,9 +1,12 @@
 package com.example.diceapp;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,23 +18,35 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Switch;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
 
     View view;
+    boolean accessGranted;
+    private final int REQ_CODE_SPEECH_INPUT = 100;
+    private TextView speechOutput;
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         view = findViewById(android.R.id.content);
-
         setContentView(R.layout.activity_main);
+    }
+
+    public void initializeTabLayout() {
+        //if input equals one of the passwords
+        //tab layout setup
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 
@@ -61,6 +76,55 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+    }
+
+    public void showSpeechPopup() {
+        //set speech input popup
+        // inflate the layout of the popup window
+        final Security security = new Security();
+
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View speechLockView = inflater.inflate(R.layout.speech_lock, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        //int width = 500;
+        //int height = 500;
+        boolean focusable = false; // lets taps outside the popup also dismiss it
+        final PopupWindow speechLockPopupWindow = new PopupWindow(speechLockView, width, height, focusable);
+
+
+        // show the popup window
+        speechLockPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        Button speechButton = (Button) speechLockView.findViewById(R.id.speechButton);
+        boolean touched = false;
+
+        speechButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                askSpeechInput(speechLockView);
+            }
+        });
+
+
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        showSpeechPopup();
+
+        Security security = new Security();
+
+        System.out.println(password);
+
+
+
     }
 
     @Override
@@ -81,42 +145,39 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     //settings menu
-    public void openSettings(View view){
+    public void openSettings(View view) {
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_settings, null);
 
+        //settings class
+        Settings settings = new Settings(view, popupView);
+
         // create the popup window
-        //int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        //int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int width = 500;
-        int height = 500;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        //int width = 500;
+        //int height = 500;
+        boolean focusable = false; // lets taps outside the popup also dismiss it
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
 
 
         // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
-        //switch event
-        Switch changeColorSwitch = (Switch) popupView.findViewById(R.id.changeColorSwitch);
+        //change Color
+        settings.changeColor(getSupportActionBar());
 
-        changeColorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#AA3939")));
-                } else {
-                    getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#3F51B5")));
-                }
-            }
-        });
-        /////////
+        //clearHistory
+        settings.clearHistory(((GlobalVariables) getApplication()).getResultHistory());
 
-        // dismiss the popup window when touched
-        popupView.setOnTouchListener(new View.OnTouchListener() {
+
+        //close settings
+        Button cancelButton = (Button) popupView.findViewById(R.id.cancelButton);
+        cancelButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 popupWindow.dismiss();
@@ -124,7 +185,48 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+    public void askSpeechInput(View speechLockView) {
+        speechOutput = (TextView) speechLockView.findViewById(R.id.speechOutput);
 
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Hi speak something");
+
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            a.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    speechOutput.setText(result.get(0));
+                    password = result.get(0);
+
+                    if (password != null) {
+                        Security security = new Security();
+                        for (String s : security.getPasswords()) {
+                            if (password.equals(s)) {
+                                initializeTabLayout();
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+
+        }
     }
 }

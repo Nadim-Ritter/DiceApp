@@ -126,7 +126,7 @@ public class TabFragment1 extends Fragment {
         TextView extraNumberField = (TextView) getView().findViewById(R.id.extraNumberField);
 
         //get number without operation
-        currentNumber = Integer.parseInt(extraNumberField.getText().toString().substring(1));
+        currentNumber = Integer.parseInt(extraNumberField.getText().toString());
 
         //if operation is true: add number, else: remove number
         if(operation){
@@ -137,7 +137,7 @@ public class TabFragment1 extends Fragment {
         }
 
         if(currentNumber < 0){
-            extraNumberField.setText(currentNumber);
+            extraNumberField.setText(Integer.toString(currentNumber));
         }else{
             extraNumberField.setText("+" + currentNumber);
         }
