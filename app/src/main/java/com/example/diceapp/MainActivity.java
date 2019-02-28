@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     public void showSpeechPopup() {
@@ -114,17 +113,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //execute after oncreate
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         showSpeechPopup();
-
-        Security security = new Security();
-
-        System.out.println(password);
-
-
-
     }
 
     @Override
@@ -137,12 +130,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            openSettings(view);
-            return true;
+        if(accessGranted){
+            if (id == R.id.action_settings) {
+                openSettings(view);
+                return true;
+            }
+
+            return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
 
@@ -218,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
                         Security security = new Security();
                         for (String s : security.getPasswords()) {
                             if (password.equals(s)) {
+                                accessGranted = true;
                                 initializeTabLayout();
                                 break;
                             }
